@@ -12,5 +12,3 @@ Tools useful for many public cloud CI/CD contexts:
 - jq
 - envsubst
 - az-cli
-
-
