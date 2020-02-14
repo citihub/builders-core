@@ -9,7 +9,7 @@ RUN apt-get update -y \
   && apt-get install unzip -y \
   && apt-get install jq -y
 
-RUN curl -L0 https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-linux-amd64 -o envsubst \
+RUN curl -L0 https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-$(uname -s)-$(arch) -o envsubst \
   && chmod +x envsubst \
   && mv envsubst /usr/local/bin
 
