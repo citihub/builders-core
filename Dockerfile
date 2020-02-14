@@ -8,7 +8,10 @@ ARG TERRATEST_LOG_PARSER_VERSION=0.13.13
 RUN apt-get update -y \
   && apt-get install unzip -y \
   && apt-get install jq -y
-  && apt-get install envsubst -y
+
+RUN curl -L0 https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-linux-amd64 -o envsubst \
+  && chmod +x envsubst \
+  && mv envsubst /usr/local/bin
 
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
