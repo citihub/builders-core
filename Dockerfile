@@ -1,14 +1,19 @@
 FROM golang
 
 LABEL maintainer=paul.jones@citihub.com
+
 ARG TERRAFORM_VERSION=0.12.20
 ARG HELM_VERSION=2.13.1
 ARG TERRATEST_LOG_PARSER_VERSION=0.13.13
+ARG ISTIO_VERSION=1.5.0
+ARG ISTIO_FLAVOUR=linux
 
+# Install jq
 RUN apt-get update -y \
   && apt-get install unzip -y \
   && apt-get install jq -y
 
+# Install envsubst
 RUN curl -L0 https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-$(uname -s)-$(arch) -o envsubst \
   && chmod +x envsubst \
   && mv envsubst /usr/local/bin
@@ -21,9 +26,20 @@ RUN curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terra
   && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
   && mv terraform /usr/local/bin
 
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl; chmod +x ./kubectl; mv ./kubectl /usr/local/bin/
+# Install kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+  && chmod +x ./kubectl \
+  && mv ./kubectl /usr/local/bin/
 
-RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz; tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz; mv linux-amd64/helm /usr/local/bin/helm;
+# Install Helm
+RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+ && tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+ && mv linux-amd64/helm /usr/local/bin/helm
+
+# Install Istioctl
+RUN curl -sL https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${ISTIO_FLAVOUR}.tar.gz | tar -zxv \
+  && chmod +x istio-${ISTIO_VERSION}/bin/istioctl \
+  && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl;
 
 # Install Terratest Log Parser
 RUN curl --location --silent --fail --show-error -o terratest_log_parser https://github.com/gruntwork-io/terratest/releases/download/v${TERRATEST_LOG_PARSER_VERSION}/terratest_log_parser_linux_amd64
