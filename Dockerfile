@@ -32,7 +32,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
   && mv ./kubectl /usr/local/bin/
 
 # Install Helm
-RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
+RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
  && tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
  && mv linux-amd64/helm /usr/local/bin/helm
 
