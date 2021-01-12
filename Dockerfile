@@ -2,11 +2,12 @@ FROM golang
 
 LABEL maintainer=paul.jones@citihub.com
 
-ARG TERRAFORM_VERSION=0.12.29
+ARG TERRAFORM_VERSION=0.14.4
 ARG HELM_VERSION=3.3.4
 ARG TERRATEST_LOG_PARSER_VERSION=0.13.13
 ARG ISTIO_VERSION=1.7.4
-ARG ISTIO_FLAVOUR=linux
+ARG ISTIO_FLAVOUR="x86_64"
+ARG CONFTEST_VERSION=0.21.0
 
 # Install jq
 RUN apt-get update -y \
@@ -37,11 +38,15 @@ RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
  && mv linux-amd64/helm /usr/local/bin/helm
 
 # Install Istioctl
-RUN curl -sL https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${ISTIO_FLAVOUR}.tar.gz | tar -zxv \
-  && chmod +x istio-${ISTIO_VERSION}/bin/istioctl \
-  && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl;
+RUN curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} TARGET_ARCH=${ISTIO_FLAVOUR} sh - \
+  && mv istio-${ISTIO_VERSION}/bin/istioctl /usr/local/bin/istioctl
 
 # Install Terratest Log Parser
-RUN curl --location --silent --fail --show-error -o terratest_log_parser https://github.com/gruntwork-io/terratest/releases/download/v${TERRATEST_LOG_PARSER_VERSION}/terratest_log_parser_linux_amd64
-RUN chmod +x terratest_log_parser
-RUN mv terratest_log_parser /usr/local/bin
+RUN curl --location --silent --fail --show-error -o terratest_log_parser https://github.com/gruntwork-io/terratest/releases/download/v${TERRATEST_LOG_PARSER_VERSION}/terratest_log_parser_linux_amd64 \
+  && chmod +x terratest_log_parser \
+  && mv terratest_log_parser /usr/local/bin
+
+# Install conftest
+RUN wget https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz \
+  && tar xzf conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz \
+  && mv conftest /usr/local/bin
