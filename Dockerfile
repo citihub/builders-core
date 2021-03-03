@@ -50,3 +50,9 @@ RUN curl --location --silent --fail --show-error -o terratest_log_parser https:/
 RUN wget https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz \
   && tar xzf conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz \
   && mv conftest /usr/local/bin
+
+# Install gcloud sdk
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+  && apt-get install -y apt-transport-https ca-certificates gnupg \
+  && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+  && apt-get -y update && apt-get -y install google-cloud-sdk
